@@ -2,18 +2,38 @@
   "version": 2,
   "builds": [
     {
-      "src": "public/index.php",
+      "src": "api/**/*.php",
       "use": "@vercel/php",
       "config": {
         "runtime": "8.2"
+      }
+    },
+    {
+      "src": "vite.config.js",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "public/build",
+        "installCommand": "npm install && composer install --no-dev",
+        "buildCommand": "npm run build",
+        "outputDirectory": "public/build"
       }
     }
   ],
   "routes": [
     {
+      "src": "/build/(.*)",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable"
+      },
+      "dest": "/public/build/$1"
+    },
+    {
+      "src": "/storage/(.*)",
+      "dest": "/public/storage/$1"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/public/index.php",
-      "methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
+      "dest": "/public/index.php"
     }
   ],
   "env": {
@@ -27,6 +47,7 @@
     "DB_DATABASE": "actas_db",
     
     "SESSION_DRIVER": "cookie",
+    "SESSION_SECURE_COOKIE": "true",
     "SESSION_LIFETIME": "120",
     
     "MAIL_MAILER": "smtp",
@@ -36,6 +57,14 @@
     "MAIL_PASSWORD": "48215cd8672f13",
     "MAIL_ENCRYPTION": "tls",
     "MAIL_FROM_ADDRESS": "neurobytepages@gmail.com",
-    "MAIL_FROM_NAME": "ActasExpress"
+    "MAIL_FROM_NAME": "ActasExpress",
+    
+    "VITE_APP_NAME": "ActasExpress",
+    "VITE_APP_URL": "https://tu-app.vercel.app"
+  },
+  "build": {
+    "env": {
+      "NODE_ENV": "production"
+    }
   }
 }
