@@ -71,7 +71,7 @@ class AuthController extends Controller
             'message' => 'Login exitoso',
             'user'    => Auth::guard('api')->user(),
             'token'   => $token,
-        ]);
+        ], 200)->header('Access-Control-Expose-Headers', 'Authorization');
     }
 
 
